@@ -1,0 +1,5 @@
+[package]
+
+name = "train-tickets-rust"
+version = "0.0.1"
+authors = ["scribu <mail@scribu.net>"]
