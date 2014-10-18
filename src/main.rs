@@ -1,25 +1,28 @@
+use std::collections::HashSet;
+
 type SeatNr = uint;
 
 #[deriving(Show)]
 struct Coach {
 	comp_size: uint,
-	seats: Vec<bool>
+	num_comp: uint,
+	occupied_seats: HashSet<SeatNr>,
 }
 
 impl Coach {
 	fn new(num_comp: uint, comp_size: uint) -> Coach {
-		let seats = Vec::from_elem(num_comp*comp_size, false);
-
-		Coach {comp_size: comp_size, seats: seats}
+		Coach {
+			comp_size: comp_size,
+			num_comp: num_comp,
+			occupied_seats: HashSet::new()
+		}
 	}
 
 	fn get_empty_seats(&self) -> Vec<SeatNr> {
 		let mut empty_seats = Vec::new();
 
-		let counter = std::iter::count(1u, 1);
-
-		for (seat_nr, occupied) in counter.zip(self.seats.iter()) {
-			if *occupied == false {
+		for seat_nr in range(1u, self.comp_size*self.num_comp) {
+			if !self.occupied_seats.contains(&seat_nr) {
 				empty_seats.push(seat_nr)
 			}
 		}
@@ -30,15 +33,11 @@ impl Coach {
 	fn occupy_seats(&mut self, seats_to_mark: &[SeatNr]) -> Result<(), Vec<SeatNr>> {
 		let mut occupied_seats = Vec::new();
 
-		for &seat_nr in seats_to_mark.iter() {
-			// needs https://github.com/rust-lang/rust/pull/17934
-			// let seat = self.seats[seat_nr-1]
-			let seat = self.seats.get_mut(seat_nr-1);
-
-			if *seat == true {
-				occupied_seats.push(seat_nr)
+		for seat_nr in seats_to_mark.iter() {
+			if self.occupied_seats.contains(seat_nr) {
+				occupied_seats.push(*seat_nr);
 			} else {
-				*seat = true;
+				self.occupied_seats.insert(*seat_nr);
 			}
 		}
 
