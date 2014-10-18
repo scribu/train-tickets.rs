@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::SmallIntMap;
 
 type SeatNr = uint;
 
@@ -6,7 +6,7 @@ type SeatNr = uint;
 struct Coach {
 	comp_size: uint,
 	num_comp: uint,
-	occupied_seats: HashSet<SeatNr>,
+	occupied_seats: SmallIntMap<()>,
 }
 
 impl Coach {
@@ -14,7 +14,7 @@ impl Coach {
 		Coach {
 			comp_size: comp_size,
 			num_comp: num_comp,
-			occupied_seats: HashSet::new()
+			occupied_seats: SmallIntMap::new()
 		}
 	}
 
@@ -22,7 +22,7 @@ impl Coach {
 		let mut empty_seats = Vec::new();
 
 		for seat_nr in range(1u, self.comp_size*self.num_comp) {
-			if !self.occupied_seats.contains(&seat_nr) {
+			if !self.occupied_seats.contains_key(&seat_nr) {
 				empty_seats.push(seat_nr)
 			}
 		}
@@ -34,10 +34,10 @@ impl Coach {
 		let mut occupied_seats = Vec::new();
 
 		for seat_nr in seats_to_mark.iter() {
-			if self.occupied_seats.contains(seat_nr) {
+			if self.occupied_seats.contains_key(seat_nr) {
 				occupied_seats.push(*seat_nr);
 			} else {
-				self.occupied_seats.insert(*seat_nr);
+				self.occupied_seats.insert(*seat_nr, ());
 			}
 		}
 
