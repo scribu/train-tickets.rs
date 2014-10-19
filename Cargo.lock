@@ -1,4 +1,4 @@
 [root]
-name = "train-tickets-rust"
+name = "train_tickets"
 version = "0.0.1"
 

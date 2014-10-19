@@ -1,61 +1,34 @@
-use std::collections::SmallIntMap;
+extern crate train_tickets;
+use train_tickets::Coach;
 
-type SeatNr = uint;
+use std::io;
 
-#[deriving(Show)]
-struct Coach {
-	comp_size: uint,
-	num_comp: uint,
-	occupied_seats: SmallIntMap<()>,
-}
-
-impl Coach {
-	fn new(num_comp: uint, comp_size: uint) -> Coach {
-		Coach {
-			comp_size: comp_size,
-			num_comp: num_comp,
-			occupied_seats: SmallIntMap::new()
-		}
-	}
-
-	fn get_empty_seats(&self) -> Vec<SeatNr> {
-		let mut empty_seats = Vec::new();
-
-		for seat_nr in range(1u, self.comp_size*self.num_comp) {
-			if !self.occupied_seats.contains_key(&seat_nr) {
-				empty_seats.push(seat_nr)
-			}
-		}
-
-		empty_seats
-	}
-
-	fn occupy_seats(&mut self, seats_to_mark: &[SeatNr]) -> Result<(), Vec<SeatNr>> {
-		let mut occupied_seats = Vec::new();
-
-		for seat_nr in seats_to_mark.iter() {
-			if self.occupied_seats.contains_key(seat_nr) {
-				occupied_seats.push(*seat_nr);
-			} else {
-				self.occupied_seats.insert(*seat_nr, ());
-			}
-		}
-
-		if occupied_seats.len() == 0 {
-			Ok(())
-		} else {
-			Err(occupied_seats)
-		}
-	}
-}
-
+#[cfg(not(test))]
 fn main() {
-	let mut coach = Coach::new(3, 4);
+	let mut coach = Coach::new(5, 5);
 
-	match coach.occupy_seats([1u, 2u, 5u]) {
-		Ok(_) => {}
-		Err(occupied_seats) => println!("Seats {} were already occupied.", occupied_seats)
+	loop {
+		println!("Empty seats: {}", coach.get_empty_seats());
+
+		print!("Number of seats to buy: ");
+
+		let input = io::stdin().read_line().ok().expect("Failed to read line");
+
+		let seats_to_find: uint = match from_str(input.as_slice().trim()) {
+			Some(num) => num,
+			None => {
+				println!("Please input a number!");
+				continue;
+			}
+		};
+
+		match coach.find_seats(seats_to_find) {
+			Some(found_seats) => {
+				coach.occupy_seats(found_seats.as_slice())
+					.ok().expect("Tried to occupy already occupied seats");
+				println!("Bought seats: {}", found_seats);
+			}
+			None => println!("Couldn't find {} seats.", seats_to_find)
+		}
 	}
-
-	println!("{}", coach.get_empty_seats());
 }
