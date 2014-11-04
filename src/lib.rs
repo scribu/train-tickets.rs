@@ -1,4 +1,4 @@
-use std::collections::SmallIntMap;
+use std::collections::VecMap;
 use std::cmp::min;
 
 pub type SeatNr = uint;
@@ -8,7 +8,7 @@ pub type SeatList = Vec<SeatNr>;
 pub struct Coach {
 	comp_size: uint,
 	num_comp: uint,
-	occupied_seats: SmallIntMap<()>,
+	occupied_seats: VecMap<()>,
 }
 
 impl Coach {
@@ -16,7 +16,7 @@ impl Coach {
 		Coach {
 			comp_size: comp_size,
 			num_comp: num_comp,
-			occupied_seats: SmallIntMap::new()
+			occupied_seats: VecMap::new()
 		}
 	}
 
@@ -35,7 +35,7 @@ impl Coach {
 			.collect::<SeatList>()
 	}
 
-	fn remainder_empty_seats(&self, found_seats: &SmallIntMap<()>) -> SeatList {
+	fn remainder_empty_seats(&self, found_seats: &VecMap<()>) -> SeatList {
 		let all_empty_seats = self.get_empty_seats();
 		let mut empty_seats: SeatList = Vec::new();
 
@@ -49,7 +49,7 @@ impl Coach {
 	}
 
 	pub fn find_seats(&self, count: uint) -> Option<SeatList> {
-		let mut found_seats: SmallIntMap<()> = SmallIntMap::new();
+		let mut found_seats: VecMap<()> = VecMap::new();
 
 		// first, try to allocate contiguous portions of compartments
 		for comp_nr in range(0u, self.num_comp) {
